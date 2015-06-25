@@ -1,0 +1,17 @@
+{
+  "name": "git-task",
+  "version": "0.0.1",
+  "description": "Set and resolve tasks and prevent commiting before everything is done.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ville Tainio",
+  "license": "MIT",
+  "dependencies": {
+    "nodegit": "0.4.1",
+    "commander": "2.8.1",
+    "when": "3.7.3",
+    "colors": "1.1.2"
+  }
+}
