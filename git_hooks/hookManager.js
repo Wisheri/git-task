@@ -8,8 +8,10 @@ var when = require('when');
 var colors = require('colors');
 
 var config = {
-  hookEnding: 'hooks/pre-commit',
-  scriptEnding: '/pre-commit',
+  preHookEnding: 'hooks/pre-commit',
+  postHookEnding: 'hooks/post-commit',
+  preScriptEnding: '/pre-commit',
+  postScriptEnding: '/post-commit',
   dirEnding: 'hooks/git-task',
   noTaskMsg: 'No such task exists.'.red,
   noFileMsg: 'No tasks defined for this branch.' + ' Feel free to commit'.green,
@@ -100,12 +102,20 @@ function printSingleTask(data) {
 }
 
 function getFilePath(gitPath, branch) {
-  var hookPath = gitPath.concat(config.hookEnding);
-  var scriptPath = __dirname.concat(config.scriptEnding);
+  var preHookPath = gitPath.concat(config.preHookEnding);
+  var postHookPath = gitPath.concat(config.postHookEnding);
+  var preScriptPath = __dirname.concat(config.preScriptEnding);
+  var postScriptPath = __dirname.concat(config.postScriptEnding);
 
-  if (!fs.existsSync(hookPath)) {
-    fs.createReadStream(scriptPath).pipe(fs.createWriteStream(hookPath));
-    fs.chmodSync(hookPath, '755'); // Allow execution
+  if (!fs.existsSync(preHookPath)) {
+    // pre-commit
+    fs.createReadStream(preScriptPath).pipe(fs.createWriteStream(preHookPath));
+    fs.chmodSync(preHookPath, '755'); // Allow execution
+  }
+  if (!fs.existsSync(postHookPath)) {
+    // post-commit
+    fs.createReadStream(postScriptPath).pipe(fs.createWriteStream(postHookPath));
+    fs.chmodSync(postHookPath, '755') // Allow execution
   }
 
   var dirPath = gitPath.concat(config.dirEnding);
@@ -200,5 +210,10 @@ module.exports = {
     }
 
     return def.promise;
+  },
+
+  removeTaskFile: function(gitPath, branch) {
+    var taskFilePath = getFilePath(gitPath, branch);
+    fs.unlinkSync(taskFilePath);
   }
 }

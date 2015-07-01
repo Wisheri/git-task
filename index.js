@@ -98,5 +98,11 @@ module.exports = {
   listRemaining: function(amount) {
     var return_str = "You have " + amount + " tasks remaining. Finish them before commiting."
     console.log(return_str.red);
+  },
+
+  removeTaskFile: function(callback) {
+    getRepoInformation().then(function(repoList) {
+       hookManager.removeTaskFile(repoList[0], repoList[1]);
+    });
   }
 }

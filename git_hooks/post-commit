@@ -2,6 +2,12 @@
 
 'use strict';
 
-var fs = require('fs');
+var git_task = require('git-task');
 
-//TODO
+function main() {
+  git_task.removeTaskFile(function() {
+    process.exit(0);
+  });
+}
+
+main();
