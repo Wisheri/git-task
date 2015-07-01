@@ -38,7 +38,9 @@ function handleError(error) {
   console.log(error);
 }
 
-function addTask(task) {
+function getRepoInformation() {
+  var def = when.defer();
+
   getLocalRepositoryPath()
     .then(openLocalRepository)
     .catch(handleError)
@@ -47,51 +49,30 @@ function addTask(task) {
 
       repository.getCurrentBranch().then(function(reference) {
         var branch = reference.name();
-        hookManager.addNewTask(task.toString(), path, branch);
-      });
+        var repoList = [path, branch];
+        def.resolve(repoList);
+      })
     });
+
+  return def.promise;
+}
+
+function addTask(task) {
+  getRepoInformation().then(function(repoList) {
+    hookManager.addNewTask(task.toString(), repoList[0], repoList[1]);
+  });
 }
 
 function resolveTask(task_id) {
-  getLocalRepositoryPath()
-    .then(openLocalRepository)
-    .catch(handleError)
-    .done(function(repository) {
-      var path = repository.path();
-
-      repository.getCurrentBranch().then(function(reference) {
-        var branch = reference.name();
-        hookManager.resolveTask(task_id, path, branch);
-      });
-    });
-}
-
-function resolveAllTasks() {
-  getLocalRepositoryPath()
-    .then(openLocalRepository)
-    .catch(handleError)
-    .done(function(repository) {
-      var path = repository.path();
-
-      repository.getCurrentBranch().then(function(reference) {
-        var branch = reference.name();
-        hookManager.resolveAllTasks(path, branch);
-      });
-    });
+  getRepoInformation().then(function(repoList) {
+    hookManager.resolveTask(task_id, repoList[0], repoList[1]);
+  });
 }
 
 function listAllTasks() {
-  getLocalRepositoryPath()
-    .then(openLocalRepository)
-    .catch(handleError)
-    .done(function(repository) {
-      var path = repository.path();
-
-      repository.getCurrentBranch().then(function(reference) {
-        var branch = reference.name();
-        hookManager.listAllTasks(path, branch);
-      });
-    });
+  getRepoInformation().then(function(repoList) {
+    hookManager.listAllTasks(repoList[0], repoList[1]);
+  });
 }
 
 /*
@@ -104,3 +85,18 @@ program
   .option('resolve <n>', 'Resolve a task', resolveTask)
   .option('-l, --list', 'List open tasks', listAllTasks)
   .parse(process.argv);
+
+module.exports = {
+  getCurrentSituation: function(callback) {
+    getRepoInformation().then(function(repoList) {
+      hookManager.getStatus(repoList[0], repoList[1]).then(function(result) {
+        callback(result);
+      });
+    });
+  },
+
+  listRemaining: function(amount) {
+    var return_str = "You have " + amount + " tasks remaining. Finish them before commiting."
+    console.log(return_str.red);
+  }
+}

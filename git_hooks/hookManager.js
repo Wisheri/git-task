@@ -12,7 +12,7 @@ var config = {
   scriptEnding: '/pre-commit',
   dirEnding: 'hooks/git-task',
   noTaskMsg: 'No such task exists.'.red,
-  noFileMsg: 'No tasks defined for this branch'.red,
+  noFileMsg: 'No tasks defined for this branch.' + ' Feel free to commit'.green,
   indentation: '        '
 }
 
@@ -59,7 +59,7 @@ function writeNewTask(task, path) {
       if (err) def.reject(err);
       def.resolve(data);
     });
-  }); 
+  });
 
   return def.promise;
 }
@@ -71,7 +71,7 @@ function printStatus(data) {
     if (data.tasks[i].resolved === true) resolved++;
   }
   if (total === resolved) {
-    var status = '  ' + 'status: ' + 'All tasks are resolved. Feel free to commit.'.green;
+    var status = '  ' + 'status: ' + 'All tasks are resolved. ' + 'Feel free to commit.'.green;
     console.log(status);
   } else {
     var status = '  ' + 'status: ' + resolved.toString() + ' out of ' + total.toString() + ' tasks resolved.';
@@ -89,20 +89,20 @@ function printAllTasks(filePath, branch) {
         if (task.resolved === true) {
           console.log(config.indentation + task.id.toString().green + "     " + task.task.green + ' (resolved)'.green);
         } else {
-          console.log(config.indentation + task.id.toString().red + "     " + task.task.red);
+          console.log(config.indentation + task.id.toString().red + "     " + task.task.red + ' (unresolved)'.red);
         }
       }
     });
 }
 
 function printSingleTask(data) {
-  console.log("New task added: " + data.tasks[data.tasks.length - 1].task.red)
+  console.log("New task added: " + data.tasks[data.tasks.length - 1].task);
 }
 
 function getFilePath(gitPath, branch) {
   var hookPath = gitPath.concat(config.hookEnding);
   var scriptPath = __dirname.concat(config.scriptEnding);
-  
+
   if (!fs.existsSync(hookPath)) {
     fs.createReadStream(scriptPath).pipe(fs.createWriteStream(hookPath));
     fs.chmodSync(hookPath, '755'); // Allow execution
@@ -123,6 +123,22 @@ function writeFile(data, path) {
   fs.writeFile(path, JSON.stringify(data), function(err) {
     if (err) def.reject(err);
     def.resolve(data);
+  });
+
+  return def.promise;
+}
+
+function calculateStatus(filePath, branch) {
+  var def = when.defer();
+
+  readJSONFile(filePath).then(function(data) {
+    var result = data.tasks.length;
+    for (var i = 0; i < data.tasks.length; i++) {
+      var task = data.tasks[i];
+      if (task.resolved === true) result--;
+    }
+
+    def.resolve(result);
   });
 
   return def.promise;
@@ -169,5 +185,20 @@ module.exports = {
     } else {
       console.log(config.noFileMsg);
     }
+  },
+
+  getStatus: function(gitPath, branch) {
+    var def = when.defer();
+
+    var taskFilePath = getFilePath(gitPath, branch);
+    if (fs.existsSync(taskFilePath)) {
+      calculateStatus(taskFilePath, branch).then(function(result) {
+        def.resolve(result);
+      });
+    } else {
+      def.reject(config.noFileMsg);
+    }
+
+    return def.promise;
   }
 }

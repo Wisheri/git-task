@@ -2,6 +2,17 @@
 
 'use strict';
 
-var fs = require('fs');
+var git_task = require('git-task');
 
-//TODO
+function main() {
+  git_task.getCurrentSituation(function (result) {
+    if (result > 0) {
+      git_task.listRemaining(result);
+      process.exit(1);
+    } else {
+      process.exit(0);
+    }
+  });
+}
+
+main();
