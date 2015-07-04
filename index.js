@@ -92,6 +92,9 @@ module.exports = {
     getRepoInformation().then(function(repoList) {
       hookManager.getStatus(repoList[0], repoList[1]).then(function(result) {
         callback(result);
+      })
+      .catch(function(error) {
+        process.exit(0);
       });
     });
   },

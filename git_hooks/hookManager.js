@@ -214,7 +214,9 @@ module.exports = {
 
   removeTaskFile: function(gitPath, branch, callback) {
     var taskFilePath = getFilePath(gitPath, branch);
-    fs.unlinkSync(taskFilePath);
+    if (fs.existsSync(taskFilePath)) {
+      fs.unlinkSync(taskFilePath);
+    }
     callback();
   }
 }
