@@ -212,8 +212,9 @@ module.exports = {
     return def.promise;
   },
 
-  removeTaskFile: function(gitPath, branch) {
+  removeTaskFile: function(gitPath, branch, callback) {
     var taskFilePath = getFilePath(gitPath, branch);
     fs.unlinkSync(taskFilePath);
+    callback();
   }
 }

@@ -107,7 +107,9 @@ module.exports = {
 
   removeTaskFile: function(callback) {
     getRepoInformation().then(function(repoList) {
-       hookManager.removeTaskFile(repoList[0], repoList[1]);
+       hookManager.removeTaskFile(repoList[0], repoList[1], function() {
+        callback();
+       });
     });
   }
 }

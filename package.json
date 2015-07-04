@@ -4,7 +4,7 @@
   "description": "Set and resolve tasks and prevent commiting before everything is done.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Ville Tainio",
   "license": "MIT",
@@ -12,6 +12,7 @@
     "nodegit": "0.4.1",
     "commander": "2.8.1",
     "when": "3.7.3",
-    "colors": "1.1.2"
+    "colors": "1.1.2",
+    "mocha": "2.2.5"
   }
 }
