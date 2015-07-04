@@ -2,16 +2,26 @@
 
 'use strict';
 
-var git_task = require('git-task');
-
-function main() {
-  git_task.getCurrentSituation(function (result) {
-    if (result > 0) {
-      git_task.listRemaining(result);
-      process.exit(1);
-    } else {
+var exec = require('child_process').exec;
+function getGitTask(callback) {
+  exec('npm link git-task', { cwd: __dirname }, function(err, stdout, stderr) {
+    if (err !== null) {
       process.exit(0);
     }
+    callback(require('git-task'));
+  });
+}
+
+function main() {
+  getGitTask(function(git_task) {
+    git_task.getCurrentSituation(function (result) {
+      if (result > 0) {
+        git_task.listRemaining(result);
+        process.exit(1);
+      } else {
+        process.exit(0);
+      }
+    });
   });
 }
 

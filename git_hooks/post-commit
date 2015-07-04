@@ -2,11 +2,21 @@
 
 'use strict';
 
-var git_task = require('git-task');
+var exec = require('child_process').exec;
+function getGitTask(callback) {
+  exec('npm link git-task', { cwd: __dirname }, function(err, stdout, stderr) {
+    if (err !== null) {
+      process.exit(0);
+    }
+    callback(require('git-task'));
+  });
+}
 
 function main() {
-  git_task.removeTaskFile(function() {
-    process.exit(0);
+  getGitTask(function(git_task) {
+    git_task.removeTaskFile(function() {
+      process.exit(0);
+    });
   });
 }
 
