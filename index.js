@@ -82,10 +82,27 @@ function listAllTasks() {
 
 program
   .version(require('./package.json').version)
+  .usage('[option] [value]')
   .option('add [task]', 'Add a new task', addTask)
   .option('resolve <id>', 'Resolve a task', resolveTask)
-  .option('-l, --list', 'List open tasks', listAllTasks)
-  .parse(process.argv);
+  .option('-l, --list', 'List open tasks', listAllTasks);
+
+program.on('--help', function() {
+  console.log(' Description:');
+  console.log('');
+  console.log('    Set and resolve tasks within one git commit. You will not be able to commit before resolving every task that has been set.');
+  console.log('');
+  console.log(' Examples:');
+  console.log('');
+  console.log('    git task add "Remove debug prints" (Add a new task)');
+  console.log('');
+  console.log('    git task -l (List tasks)');
+  console.log('');
+  console.log('    git task resolve 1 (Resolve the task with ID 1)');
+  console.log('');
+});
+
+program.parse(process.argv);
 
 module.exports = {
   getCurrentSituation: function(callback) {
