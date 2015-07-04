@@ -118,9 +118,9 @@ module.exports = {
 
   listRemaining: function(amount) {
     if (amount !== 1) {
-      var return_str = "You have " + amount + " tasks remaining. Finish them before commiting."
+      var return_str = "You have " + amount + " tasks remaining. Finish them before committing."
     } else {
-      var return_str = "You have " + amount + " task remaining. Finish it before commiting."
+      var return_str = "You have " + amount + " task remaining. Finish it before committing."
     }
     console.log(return_str.red);
   },

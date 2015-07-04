@@ -1,7 +1,7 @@
 {
   "name": "git-task",
   "version": "0.1.0",
-  "description": "Set and resolve tasks and prevent commiting before everything is done.",
+  "description": "Set and resolve tasks and prevent committing before everything is done.",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
