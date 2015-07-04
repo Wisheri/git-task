@@ -1,13 +1,31 @@
 {
   "name": "git-task",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Set and resolve tasks and prevent commiting before everything is done.",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
+  "bin": {
+    "git-task": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Wisheri/git-task.git"
+  },
+  "keywords": [
+    "git",
+    "task",
+    "git-hooks",
+    "todo",
+    "list"
+  ],
   "author": "Ville Tainio",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Wisheri/git-task/issues"
+  },
+  "homepage": "https://github.com/Wisheri/git-task",
   "dependencies": {
     "nodegit": "0.4.1",
     "commander": "2.8.1",
