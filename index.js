@@ -36,6 +36,7 @@ function openLocalRepository(path) {
 
 function handleError(error) {
   console.log(error);
+  process.exit(1);
 }
 
 function getRepoInformation() {
@@ -82,7 +83,7 @@ function listAllTasks() {
 program
   .version(require('./package.json').version)
   .option('add [task]', 'Add a new task', addTask)
-  .option('resolve <n>', 'Resolve a task', resolveTask)
+  .option('resolve <id>', 'Resolve a task', resolveTask)
   .option('-l, --list', 'List open tasks', listAllTasks)
   .parse(process.argv);
 
@@ -96,7 +97,11 @@ module.exports = {
   },
 
   listRemaining: function(amount) {
-    var return_str = "You have " + amount + " tasks remaining. Finish them before commiting."
+    if (amount !== 1) {
+      var return_str = "You have " + amount + " tasks remaining. Finish them before commiting."
+    } else {
+      var return_str = "You have " + amount + " task remaining. Finish it before commiting."
+    }
     console.log(return_str.red);
   },
 
