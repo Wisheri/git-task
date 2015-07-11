@@ -2,7 +2,6 @@
 
 'use strict';
 
-var git = require('nodegit');
 var program = require('commander');
 var exec = require('child_process').exec;
 var path = require('path');
@@ -30,8 +29,17 @@ function getLocalRepositoryPath() {
   return def.promise;
 }
 
-function openLocalRepository(path) {
-  return git.Repository.open(path);
+function getCurrentBranch() {
+  var def = when.defer();
+
+  _command('git rev-parse --abbrev-ref HEAD', function (result) {
+    if (result !== '')
+      def.resolve(result);
+    else
+      def.reject('Could not fetch current git branch.');
+  });
+
+  return def.promise;
 }
 
 function handleError(error) {
@@ -43,16 +51,13 @@ function getRepoInformation() {
   var def = when.defer();
 
   getLocalRepositoryPath()
-    .then(openLocalRepository)
     .catch(handleError)
-    .done(function(repository) {
-      var path = repository.path();
-
-      repository.getCurrentBranch().then(function(reference) {
-        var branch = reference.name();
-        var repoList = [path, branch];
+    .done(function(path) {
+      getCurrentBranch().then(function(branch) {
+        var repoList = [path.concat('/.git/'), branch];
         def.resolve(repoList);
       })
+      .catch(handleError);
     });
 
   return def.promise;
