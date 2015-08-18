@@ -1,4 +1,7 @@
 # git-task
+
+[![Build Status](https://travis-ci.org/Wisheri/git-task.svg?branch=master)](https://travis-ci.org/Wisheri/git-task)
+
 Set and resolve tasks and prevent committing before everything is done. This is a command line tool for not forgetting to do the annoying little things before committing. Instead of keeping track of tasks for the entire project this tool allows you to set small tasks for one commit and branch at a time. After committing, the old resolved tasks are automatically removed and you can start creating new great things.
 
 ## Usage
