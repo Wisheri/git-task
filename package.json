@@ -4,7 +4,7 @@
   "description": "Set and resolve tasks and prevent committing before everything is done.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "grunt"
   },
   "bin": {
     "git-task": "./index.js"
@@ -29,7 +29,12 @@
   "dependencies": {
     "commander": "2.8.1",
     "when": "3.7.3",
-    "colors": "1.1.2",
-    "mocha": "2.2.5"
+    "colors": "1.1.2"
+  },
+  "devDependencies": {
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-jshint": "0.11.2",
+    "grunt-mocha-test": "^0.12.7"
   }
 }
