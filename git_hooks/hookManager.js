@@ -16,7 +16,7 @@ var config = {
   noTaskMsg: 'No such task exists.'.red,
   noFileMsg: 'No tasks defined for this branch.' + ' Feel free to commit'.green,
   indentation: '        '
-}
+};
 
 function generateNewTaskFile(task, path) {
   var def = when.defer();
@@ -54,8 +54,8 @@ function writeNewTask(task, path) {
   var def = when.defer();
 
   readJSONFile(path).then(function(data) {
-    var task_id = data.tasks[data.tasks.length - 1]['id'] + 1;
-    data.tasks.push({'id': task_id, 'task': task, 'resolved': false});
+    var taskId = data.tasks.length + 1;
+    data.tasks.push({'id': taskId, 'task': task, 'resolved': false});
 
     fs.writeFile(path, JSON.stringify(data), function(err) {
       if (err) def.reject(err);
@@ -69,23 +69,24 @@ function writeNewTask(task, path) {
 function printStatus(data) {
   var total = data.tasks.length;
   var resolved = 0;
+  var status;
   for (var i = 0; i < data.tasks.length; i++) {
     if (data.tasks[i].resolved === true) resolved++;
   }
   if (total === resolved) {
-    var status = '  ' + 'status: ' + 'All tasks are resolved. ' + 'Feel free to commit.'.green;
+    status = '  ' + 'status: ' + 'All tasks are resolved. ' + 'Feel free to commit.'.green;
     console.log(status);
   } else {
-    var status = '  ' + 'status: ' + resolved.toString() + ' out of ' + total.toString() + ' tasks resolved.';
+    status = '  ' + 'status: ' + resolved.toString() + ' out of ' + total.toString() + ' tasks resolved.';
       console.log(status);
   }
 }
 
 function printAllTasks(filePath, branch) {
   readJSONFile(filePath).then(function(data) {
-      console.log("Tasks for branch: " + branch)
+      console.log("Tasks for branch: " + branch);
       printStatus(data);
-      console.log(config.indentation + "ID    TASK")
+      console.log(config.indentation + "ID    TASK");
       for (var i = 0; i < data.tasks.length; i++) {
         var task = data.tasks[i];
         if (task.resolved === true) {
@@ -115,7 +116,7 @@ function getFilePath(gitPath, branch) {
   if (!fs.existsSync(postHookPath)) {
     // post-commit
     fs.createReadStream(postScriptPath).pipe(fs.createWriteStream(postHookPath));
-    fs.chmodSync(postHookPath, '755') // Allow execution
+    fs.chmodSync(postHookPath, '755'); // Allow execution
   }
 
   var dirPath = gitPath.concat(config.dirEnding);
@@ -167,19 +168,19 @@ module.exports = {
     }
   },
 
-  resolveTask: function(task_id, gitPath, branch) {
+  resolveTask: function(taskId, gitPath, branch) {
     var taskFilePath = getFilePath(gitPath, branch);
 
     if (!fs.existsSync(taskFilePath)) {
       console.log(config.noTaskMsg);
     } else {
       readJSONFile(taskFilePath).then(function(data) {
-        if (task_id < 1 || task_id > data.tasks.length) {
+        if (taskId < 1 || taskId > data.tasks.length) {
           console.log(config.noTaskMsg);
-        } else if (data.tasks[task_id - 1].resolved === true) {
+        } else if (data.tasks[taskId - 1].resolved === true) {
           console.log("Task already resolved.".green);
         } else {
-          data.tasks[task_id - 1].resolved = true;
+          data.tasks[taskId - 1].resolved = true;
 
           writeFile(data, taskFilePath)
             .then(printAllTasks(taskFilePath, branch));
@@ -219,4 +220,4 @@ module.exports = {
     }
     callback();
   }
-}
+};

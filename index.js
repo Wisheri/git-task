@@ -11,7 +11,7 @@ var hookManager = require('./git_hooks/hookManager');
 
 function _command (command, callback) {
   exec(command, { cwd: '.' }, function (err, stdout, stderr) {
-    callback(stdout.split('\n').join(''))
+    callback(stdout.split('\n').join(''));
   });
 }
 
@@ -122,12 +122,13 @@ module.exports = {
   },
 
   listRemaining: function(amount) {
+    var returnStr;
     if (amount !== 1) {
-      var return_str = "You have " + amount + " tasks remaining. Finish them before committing."
+      returnStr = "You have " + amount + " tasks remaining. Finish them before committing.";
     } else {
-      var return_str = "You have " + amount + " task remaining. Finish it before committing."
+      returnStr = "You have " + amount + " task remaining. Finish it before committing.";
     }
-    console.log(return_str.red);
+    console.log(returnStr.red);
   },
 
   removeTaskFile: function(callback) {
@@ -137,4 +138,4 @@ module.exports = {
        });
     });
   }
-}
+};
