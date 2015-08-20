@@ -89,10 +89,11 @@ function printAllTasks(filePath, branch) {
       console.log(config.indentation + "ID    TASK");
       for (var i = 0; i < data.tasks.length; i++) {
         var task = data.tasks[i];
+        var spaces = new Array(Math.max(0, 7 - task.id.toString().length)).join(' ');
         if (task.resolved === true) {
-          console.log(config.indentation + task.id.toString().green + "     " + task.task.green + ' (resolved)'.green);
+          console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (resolved)'.green);
         } else {
-          console.log(config.indentation + task.id.toString().red + "     " + task.task.red + ' (unresolved)'.red);
+          console.log(config.indentation + task.id.toString().red + spaces + task.task.red + ' (unresolved)'.red);
         }
       }
     });
