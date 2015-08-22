@@ -31,6 +31,15 @@ describe('add a new task', function() {
   });
 });
 
+describe('Test git hook', function() {
+  it('should not allow git commit', function(done) {
+    exec('git commit', function(err, stdout, stderr) {
+      assert.equal(stderr, 'You have 1 task remaining. Finish it before committing.\n');
+      done();
+    });
+  });
+});
+
 describe('resolve a task', function() {
   it('Should resolve a task', function(done) {
     exec('node index.js resolve 1', function(err, stdout, stderr) {
