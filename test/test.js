@@ -33,6 +33,7 @@ describe('add a new task', function() {
 
 describe('Test git hook', function() {
   it('should not allow git commit', function(done) {
+    this.timeout(0);
     exec('git commit', function(err, stdout, stderr) {
       assert.equal(stderr, 'You have 1 task remaining. Finish it before committing.\n');
       done();
