@@ -40,5 +40,17 @@ You have 1 task remaining. Finish it before committing.
 ## Install
 `npm install -g git-task`
 
+## Using Docker
+You can also Docker for developing git-task.
+
+Make sure you have [Docker](https://www.docker.com/) installed on your system.
+
+Build the Docker image:  
+`docker build -t your-image-name .`
+
+Run the Docker image:  
+`docker run -t -i your-image-name`
+
+
 ## License
 [The MIT License (MIT)](https://github.com/Wisheri/git-task/blob/master/LICENSE.md)
