@@ -170,6 +170,9 @@ module.exports = {
   },
 
   resolveTask: function(taskId, gitPath, branch) {
+    if (isNaN(taskId)) {
+      throw new Error('ID should be a number.');
+    }
     var taskFilePath = getFilePath(gitPath, branch);
 
     if (!fs.existsSync(taskFilePath)) {

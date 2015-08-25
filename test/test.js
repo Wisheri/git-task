@@ -42,6 +42,13 @@ describe('Test git hook', function() {
 });
 
 describe('resolve a task', function() {
+  it('Should return an error message', function(done) {
+    exec('node index.js resolve hunter2', function(err, stdout, stderr) {
+      assert.equal(stdout, 'Error: ID should be a number.\n');
+      done();
+    });
+  });
+
   it('Should resolve a task', function(done) {
     exec('node index.js resolve 1', function(err, stdout, stderr) {
       if (err !== null) {

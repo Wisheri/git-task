@@ -43,8 +43,8 @@ function getCurrentBranch() {
 }
 
 function handleError(error) {
-  console.log(error);
-  process.exit(1);
+  console.log(error.toString().red);
+  process.exit(0);
 }
 
 function getRepoInformation() {
@@ -72,7 +72,8 @@ function addTask(task) {
 function resolveTask(task_id) {
   getRepoInformation().then(function(repoList) {
     hookManager.resolveTask(task_id, repoList[0], repoList[1]);
-  });
+  })
+  .catch(handleError);
 }
 
 function listAllTasks() {
