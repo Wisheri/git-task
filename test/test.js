@@ -85,7 +85,38 @@ describe('resolve a task', function() {
   });
 });
 
+describe('clean task file', function() {
+  before(function(done) {
+    exec('node index.js clean', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+      done();
+    });
+  });
+
+  it('Should return empty message', function(done) {
+    exec('node index.js -l', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'No tasks defined for this branch. Feel free to commit\n');
+      done();
+    });
+  });
+});
+
 describe('remove task file', function() {
+  before(function(done) {
+    exec('node index.js add "Task"', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+      done();
+    });
+  });
+
   it('Should remove the task file', function(done) {
       assert.doesNotThrow(function() {
         index.removeTaskFile(function() {

@@ -82,6 +82,14 @@ function listAllTasks() {
   });
 }
 
+function cleanTasks() {
+  getRepoInformation().then(function(repoList) {
+    hookManager.removeTaskFile(repoList[0], repoList[1], function() {
+      console.log('All tasks removed.'.green);
+    });
+  });
+}
+
 /*
 * Application commands
 */
@@ -91,6 +99,7 @@ program
   .usage('[option] [value]')
   .option('add [task]', 'Add a new task', addTask)
   .option('resolve <id>', 'Resolve a task', resolveTask)
+  .option('clean', 'Clean tasks', cleanTasks)
   .option('-l, --list', 'List open tasks', listAllTasks);
 
 program.on('--help', function() {
@@ -100,11 +109,13 @@ program.on('--help', function() {
   console.log('');
   console.log(' Examples:');
   console.log('');
-  console.log('    git task add "Remove debug prints" (Add a new task)');
+  console.log('    $ git task add "Remove debug prints" (Add a new task)');
   console.log('');
-  console.log('    git task -l (List tasks)');
+  console.log('    $ git task -l (List tasks)');
   console.log('');
-  console.log('    git task resolve 1 (Resolve the task with ID 1)');
+  console.log('    $ git task resolve 1 (Resolve the task with ID 1)');
+  console.log('');
+  console.log('    $ git task clean (Remove all tasks)');
   console.log('');
 });
 
