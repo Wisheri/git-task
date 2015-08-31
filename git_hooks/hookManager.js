@@ -84,16 +84,20 @@ function printStatus(data) {
 
 function printAllTasks(filePath, branch) {
   readJSONFile(filePath).then(function(data) {
-      console.log("Tasks for branch: " + branch);
-      printStatus(data);
-      console.log(config.indentation + "ID    TASK");
-      for (var i = 0; i < data.tasks.length; i++) {
-        var task = data.tasks[i];
-        var spaces = new Array(Math.max(0, 7 - task.id.toString().length)).join(' ');
-        if (task.resolved === true) {
-          console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (resolved)'.green);
-        } else {
-          console.log(config.indentation + task.id.toString().red + spaces + task.task.red + ' (unresolved)'.red);
+      if (data.tasks.length === 0) {
+        console.log(config.noFileMsg);
+      } else {
+        console.log("Tasks for branch: " + branch);
+        printStatus(data);
+        console.log(config.indentation + "ID    TASK");
+        for (var i = 0; i < data.tasks.length; i++) {
+          var task = data.tasks[i];
+          var spaces = new Array(Math.max(0, 7 - task.id.toString().length)).join(' ');
+          if (task.resolved === true) {
+            console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (resolved)'.green);
+          } else {
+            console.log(config.indentation + task.id.toString().red + spaces + task.task.red + ' (unresolved)'.red);
+          }
         }
       }
     });
@@ -215,6 +219,33 @@ module.exports = {
     }
 
     return def.promise;
+  },
+
+  removeTask: function(taskId, gitPath, branch) {
+    if (isNaN(taskId)) {
+      throw new Error('ID should be a number.');
+    }
+    var taskFilePath = getFilePath(gitPath, branch);
+    if (!fs.existsSync(taskFilePath)) {
+      console.log(config.noTaskMsg);
+    } else {
+      readJSONFile(taskFilePath).then(function(data) {
+        if (taskId < 1 || taskId > data.tasks.length) {
+          console.log(config.noTaskMsg);
+        } else {
+
+          data.tasks.splice(taskId - 1, 1);
+          for (var i = taskId - 1; i < data.tasks.length; i++) {
+            data.tasks[i].id--;
+          }
+
+          writeFile(data, taskFilePath)
+            .then(function() {
+              console.log('Task removed'.green);
+            });
+        }
+      });
+    }
   },
 
   removeTaskFile: function(gitPath, branch, callback) {

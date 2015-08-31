@@ -107,6 +107,39 @@ describe('clean task file', function() {
   });
 });
 
+describe('remove single task', function() {
+  before(function(done) {
+    exec('node index.js add "Task"', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+      done();
+    });
+  });
+
+  it('should remove task', function(done) {
+    exec('node index.js remove 1', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'Task removed\n');
+      done();
+    });
+  });
+
+  it('should have removed the task', function(done) {
+    exec('node index.js -l', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'No tasks defined for this branch. Feel free to commit\n');
+      done();
+    });
+  });
+});
+
 describe('remove task file', function() {
   before(function(done) {
     exec('node index.js add "Task"', function(err, stdout, stderr) {

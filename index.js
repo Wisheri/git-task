@@ -90,6 +90,12 @@ function cleanTasks() {
   });
 }
 
+function removeTask(taskId) {
+  getRepoInformation().then(function(repoList) {
+    hookManager.removeTask(taskId, repoList[0], repoList[1]);
+  });
+}
+
 /*
 * Application commands
 */
@@ -99,6 +105,7 @@ program
   .usage('[option] [value]')
   .option('add [task]', 'Add a new task', addTask)
   .option('resolve <id>', 'Resolve a task', resolveTask)
+  .option('remove <id>', 'Remove a task', removeTask)
   .option('clean', 'Clean tasks', cleanTasks)
   .option('-l, --list', 'List open tasks', listAllTasks);
 
@@ -114,6 +121,8 @@ program.on('--help', function() {
   console.log('    $ git task -l (List tasks)');
   console.log('');
   console.log('    $ git task resolve 1 (Resolve the task with ID 1)');
+  console.log('');
+  console.log('    $ git task remove 1 (Remove the task with ID 1)');
   console.log('');
   console.log('    $ git task clean (Remove all tasks)');
   console.log('');
