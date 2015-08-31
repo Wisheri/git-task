@@ -37,6 +37,19 @@ $ git commit
 You have 1 task remaining. Finish it before committing.
 ```
 
+#### Remove tasks
+If you've made a mistake while adding a new task, you can easily remove it.
+```
+$ git task remove 1
+Task removed
+```
+
+You can also remove all tasks with `clean`
+```
+$ git task clean
+All tasks removed.
+```
+
 ## Install
 `npm install -g git-task`
 
