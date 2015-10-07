@@ -50,6 +50,14 @@ $ git task clean
 All tasks removed.
 ```
 
+#### Move a task
+If you feel like a task should be in the next commit instead, you can move it there.
+```
+$ git task move 1
+Task moved
+```
+You are now able to commit before resolving this task and it will automatically appear as an unresolved task after your next commit.
+
 ## Install
 `npm install -g git-task`
 
