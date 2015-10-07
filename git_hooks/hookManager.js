@@ -27,7 +27,8 @@ function generateNewTaskFile(task, path) {
       {
         'id': 1,
         'task': task,
-        'resolved': false
+        'resolved': false,
+        'move': false
       }]
     });
 
@@ -55,7 +56,7 @@ function writeNewTask(task, path) {
 
   readJSONFile(path).then(function(data) {
     var taskId = data.tasks.length + 1;
-    data.tasks.push({'id': taskId, 'task': task, 'resolved': false});
+    data.tasks.push({'id': taskId, 'task': task, 'resolved': false, 'move': false});
 
     fs.writeFile(path, JSON.stringify(data), function(err) {
       if (err) def.reject(err);
@@ -71,7 +72,7 @@ function printStatus(data) {
   var resolved = 0;
   var status;
   for (var i = 0; i < data.tasks.length; i++) {
-    if (data.tasks[i].resolved === true) resolved++;
+    if (data.tasks[i].resolved === true || data.tasks[i].move === true) resolved++;
   }
   if (total === resolved) {
     status = '  ' + 'status: ' + 'All tasks are resolved. ' + 'Feel free to commit.'.green;
@@ -95,6 +96,8 @@ function printAllTasks(filePath, branch) {
           var spaces = new Array(Math.max(0, 7 - task.id.toString().length)).join(' ');
           if (task.resolved === true) {
             console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (resolved)'.green);
+          } else if (task.move === true) {
+            console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (moved)'.green);
           } else {
             console.log(config.indentation + task.id.toString().red + spaces + task.task.red + ' (unresolved)'.red);
           }
@@ -151,13 +154,30 @@ function calculateStatus(filePath, branch) {
     var result = data.tasks.length;
     for (var i = 0; i < data.tasks.length; i++) {
       var task = data.tasks[i];
-      if (task.resolved === true) result--;
+      if (task.resolved === true || task.move === true) result--;
     }
 
     def.resolve(result);
   });
 
   return def.promise;
+}
+
+function emptyTasksWithMove(data, position) {
+  if (position >= data.tasks.length) {
+    return data;
+  }
+
+  if (data.tasks[position].move === false) {
+    data.tasks.splice(position, 1);
+    for (var i = position; i < data.tasks.length; i++) {
+      data.tasks[i].id--;
+    }
+
+    return emptyTasksWithMove(data, position);
+  } else {
+    return emptyTasksWithMove(data, position + 1);
+  }
 }
 
 module.exports = {
@@ -251,8 +271,65 @@ module.exports = {
   removeTaskFile: function(gitPath, branch, callback) {
     var taskFilePath = getFilePath(gitPath, branch);
     if (fs.existsSync(taskFilePath)) {
+
+      readJSONFile(taskFilePath).then(function(data) {
+        var singleMoved = false;
+        for (var i = 0; i < data.tasks.length; i++) {
+          if (data.tasks[i].move === true) {
+            singleMoved = true;
+            break;
+          }
+        }
+
+        if (singleMoved === false) {
+          fs.unlinkSync(taskFilePath);
+          callback();
+        } else {
+          data = emptyTasksWithMove(data, 0);
+          for (var j = 0; j < data.tasks.length; j++) {
+            data.tasks[j].move = false;
+          }
+          writeFile(data, taskFilePath)
+            .then(function() {
+              callback();
+            });
+        }
+      });
+
+    } else {
+      callback();
+    }
+  },
+
+  moveTask: function(taskId, gitPath, branch) {
+    if (isNaN(taskId)) {
+      throw new Error('ID Should be a number.');
+    }
+    var taskFilePath = getFilePath(gitPath, branch);
+    if (!fs.existsSync(taskFilePath)) {
+      console.log(config.noTaskMsg);
+    } else {
+      readJSONFile(taskFilePath).then(function(data) {
+        if (taskId < 1 || taskId > data.tasks.length) {
+          console.log(config.noTaskMsg);
+        } else {
+
+          data.tasks[taskId - 1].move = true;
+          writeFile(data, taskFilePath)
+            .then(function() {
+              console.log('Task moved'.green);
+            });
+        }
+      });
+    }
+  },
+
+  cleanTasks: function(gitPath, branch, callback) {
+    var taskFilePath = getFilePath(gitPath, branch);
+    if (fs.existsSync(taskFilePath)) {
       fs.unlinkSync(taskFilePath);
     }
+
     callback();
   }
 };

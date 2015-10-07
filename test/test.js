@@ -158,3 +158,52 @@ describe('remove task file', function() {
       });
   });
 });
+
+describe('move a task', function() {
+  before(function(done) {
+    exec('node index.js add "Task"', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+      done();
+    });
+  });
+
+  it('should move the task', function(done) {
+    exec('node index.js move 1', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+      done();
+    });
+  });
+
+  it('should return an error message', function(done) {
+    exec('node index.js move 2', function(err, stdout, stderr) {
+      assert.equal(stdout, 'No such task exists.\n');
+      done();
+    });
+  });
+
+  it('should remove the task file', function(done) {
+    exec('node index.js clean', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'All tasks removed.\n');
+      done();
+    });
+  });
+
+  it('should return an empty message', function(done) {
+    exec('node index.js -l', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'No tasks defined for this branch. Feel free to commit\n');
+      done();
+    });
+  });
+});

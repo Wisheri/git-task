@@ -84,7 +84,7 @@ function listAllTasks() {
 
 function cleanTasks() {
   getRepoInformation().then(function(repoList) {
-    hookManager.removeTaskFile(repoList[0], repoList[1], function() {
+    hookManager.cleanTasks(repoList[0], repoList[1], function() {
       console.log('All tasks removed.'.green);
     });
   });
@@ -93,6 +93,12 @@ function cleanTasks() {
 function removeTask(taskId) {
   getRepoInformation().then(function(repoList) {
     hookManager.removeTask(taskId, repoList[0], repoList[1]);
+  });
+}
+
+function moveTask(taskId) {
+  getRepoInformation().then(function(repoList) {
+    hookManager.moveTask(taskId, repoList[0], repoList[1]);
   });
 }
 
@@ -107,6 +113,7 @@ program
   .option('resolve <id>', 'Resolve a task', resolveTask)
   .option('remove <id>', 'Remove a task', removeTask)
   .option('clean', 'Clean tasks', cleanTasks)
+  .option('move <id>', 'Move a task', moveTask)
   .option('-l, --list', 'List open tasks', listAllTasks);
 
 program.on('--help', function() {
