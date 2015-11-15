@@ -2,26 +2,34 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var index = require('../index');
 var fs = require('fs');
+var path = require('path');
 
 describe('empty-list', function() {
   before(function(done) {
-    exec('git rev-parse --show-toplevel', { cwd: __dirname }, function(err, stdout, stderr) {
+    exec('git init', { cwd: path.resolve('.') }, function(err, stdout, stderr) {
       if (err !== null) {
         throw new Error(stderr);
       }
-      try {
-        var dirPath = stdout.split('\n').join('').concat('/.git/hooks/git-task/');
-        var files = fs.readdirSync(dirPath);
-        for (var i = 0; i < files.length; i++) {
-          var filePath = dirPath.concat(files[i]);
-          if (fs.statSync(filePath).isFile())
-            fs.unlinkSync(filePath);
-        }
 
-        done();
-      } catch (e) {
-        done();
-      }
+      exec('git rev-parse --show-toplevel', { cwd: __dirname }, function(err, stdout, stderr) {
+        if (err !== null) {
+          throw new Error(stderr);
+        }
+        try {
+          var dirPath = stdout.split('\n').join('').concat('/.git/hooks/git-task/');
+          var files = fs.readdirSync(dirPath);
+          for (var i = 0; i < files.length; i++) {
+            var filePath = dirPath.concat(files[i]);
+            if (fs.statSync(filePath).isFile())
+              fs.unlinkSync(filePath);
+          }
+
+          done();
+        } catch (e) {
+          done();
+        }
+      });
+
     });
   });
 
