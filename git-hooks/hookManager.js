@@ -71,12 +71,15 @@ function printStatus(data) {
   var total = data.tasks.length;
   var resolved = 0;
   var status;
+
   for (var i = 0; i < data.tasks.length; i++) {
     if (data.tasks[i].resolved === true || data.tasks[i].move === true) resolved++;
   }
+
   if (total === resolved) {
     status = '  ' + 'status: ' + 'All tasks are resolved. ' + 'Feel free to commit.'.green;
     console.log(status);
+
   } else {
     status = '  ' + 'status: ' + resolved.toString() + ' out of ' + total.toString() + ' tasks resolved.';
       console.log(status);
@@ -85,19 +88,25 @@ function printStatus(data) {
 
 function printAllTasks(filePath, branch) {
   readJSONFile(filePath).then(function(data) {
+ 
       if (data.tasks.length === 0) {
         console.log(config.noFileMsg);
+ 
       } else {
         console.log("Tasks for branch: " + branch);
         printStatus(data);
         console.log(config.indentation + "ID    TASK");
+ 
         for (var i = 0; i < data.tasks.length; i++) {
           var task = data.tasks[i];
           var spaces = new Array(Math.max(0, 7 - task.id.toString().length)).join(' ');
+ 
           if (task.resolved === true) {
             console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (resolved)'.green);
+ 
           } else if (task.move === true) {
             console.log(config.indentation + task.id.toString().green + spaces + task.task.green + ' (moved)'.green);
+ 
           } else {
             console.log(config.indentation + task.id.toString().red + spaces + task.task.red + ' (unresolved)'.red);
           }
@@ -175,6 +184,7 @@ function emptyTasksWithMove(data, position) {
     }
 
     return emptyTasksWithMove(data, position);
+
   } else {
     return emptyTasksWithMove(data, position + 1);
   }
@@ -187,6 +197,7 @@ module.exports = {
     if (fs.existsSync(taskFilePath)) {
       writeNewTask(task, taskFilePath)
         .then(printSingleTask);
+
     } else {
       generateNewTaskFile(task, taskFilePath)
         .then(printSingleTask);
@@ -201,12 +212,16 @@ module.exports = {
 
     if (!fs.existsSync(taskFilePath)) {
       console.log(config.noTaskMsg);
+
     } else {
+
       readJSONFile(taskFilePath).then(function(data) {
         if (taskId < 1 || taskId > data.tasks.length) {
           console.log(config.noTaskMsg);
+
         } else if (data.tasks[taskId - 1].resolved === true) {
           console.log("Task already resolved.".green);
+
         } else {
           data.tasks[taskId - 1].resolved = true;
 
@@ -221,6 +236,7 @@ module.exports = {
     var taskFilePath = getFilePath(gitPath, branch);
     if (fs.existsSync(taskFilePath)) {
       printAllTasks(taskFilePath, branch);
+  
     } else {
       console.log(config.noFileMsg);
     }
@@ -234,6 +250,7 @@ module.exports = {
       calculateStatus(taskFilePath, branch).then(function(result) {
         def.resolve(result);
       });
+
     } else {
       def.reject(config.noFileMsg);
     }
@@ -274,6 +291,7 @@ module.exports = {
 
       readJSONFile(taskFilePath).then(function(data) {
         var singleMoved = false;
+
         for (var i = 0; i < data.tasks.length; i++) {
           if (data.tasks[i].move === true) {
             singleMoved = true;
@@ -284,11 +302,14 @@ module.exports = {
         if (singleMoved === false) {
           fs.unlinkSync(taskFilePath);
           callback();
+    
         } else {
           data = emptyTasksWithMove(data, 0);
+
           for (var j = 0; j < data.tasks.length; j++) {
             data.tasks[j].move = false;
           }
+
           writeFile(data, taskFilePath)
             .then(function() {
               callback();
@@ -305,18 +326,23 @@ module.exports = {
     if (isNaN(taskId)) {
       throw new Error('ID Should be a number.');
     }
+
     var taskFilePath = getFilePath(gitPath, branch);
+
     if (!fs.existsSync(taskFilePath)) {
       console.log(config.noTaskMsg);
+
     } else {
       readJSONFile(taskFilePath).then(function(data) {
         if (taskId < 1 || taskId > data.tasks.length) {
           console.log(config.noTaskMsg);
-        } else {
 
+        } else {
           data.tasks[taskId - 1].move = true;
+
           writeFile(data, taskFilePath)
             .then(function() {
+
               console.log('Task moved'.green);
             });
         }

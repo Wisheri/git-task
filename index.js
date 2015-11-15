@@ -7,7 +7,7 @@ var exec = require('child_process').exec;
 var path = require('path');
 var when = require('when');
 var colors = require('colors');
-var hookManager = require('./git_hooks/hookManager');
+var hookManager = require('./git-hooks/hookManager');
 
 function _command (command, callback) {
   exec(command, { cwd: '.' }, function (err, stdout, stderr) {
