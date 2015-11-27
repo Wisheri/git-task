@@ -338,6 +338,10 @@ module.exports = {
           console.log(config.noTaskMsg);
 
         } else {
+          if (data.tasks[taskId -1].resolved === true) {
+            console.log('Task already resolved');
+            return;
+          }
           data.tasks[taskId - 1].move = true;
 
           writeFile(data, taskFilePath)

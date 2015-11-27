@@ -215,3 +215,49 @@ describe('move a task', function() {
     });
   });
 });
+
+describe('try to move a resolved task', function() {
+  before(function(done) {
+    exec('node index.js add "Task"', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+      done();
+    });
+  });
+
+  it('should resolve a task', function(done) {
+    exec('node index.js resolve 1', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      index.getCurrentSituation(function(result) {
+        assert.equal(0, result); // 0 tasks remaining.
+        done();
+      });
+    });
+  });
+
+  it('should not allow to move a resolved task', function(done) {
+    exec('node index.js move 1', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'Task already resolved\n');
+      done();
+    });
+  });
+
+  it('should remove the task file', function(done) {
+    exec('node index.js clean', function(err, stdout, stderr) {
+      if (err !== null) {
+        throw new Error(stderr);
+      }
+
+      assert.equal(stdout, 'All tasks removed.\n');
+      done();
+    });
+  });
+});
