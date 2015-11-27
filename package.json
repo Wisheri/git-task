@@ -1,6 +1,6 @@
 {
   "name": "git-task",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Set and resolve tasks and prevent committing before everything is done.",
   "main": "index.js",
   "scripts": {
